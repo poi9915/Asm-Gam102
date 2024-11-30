@@ -30,7 +30,7 @@ namespace Script.Manager
                 Destroy(gameObject);
             }
 
-            _highScore = PlayerPrefs.GetInt("HighScore", 0);
+            _highScore = PlayerPrefs.GetInt("HighScore");
             // DontDestroyOnLoad(this);
             DontDestroyOnLoad(scoreUi);
             // DontDestroyOnLoad(highScoreUi);
@@ -38,16 +38,16 @@ namespace Script.Manager
 
         private void SaveHighScore()
         {
-            if (_highScore > _currentScore)
+            if (_currentScore > _highScore)
             {
-                PlayerPrefs.SetInt("HighScore", _highScore);
+                PlayerPrefs.SetInt("HighScore", _currentScore);
                 PlayerPrefs.Save();
             }
         }
 
         public void AddScore()
         {
-            _currentScore = _highScore + 1;
+            _currentScore++;
             scoreText.text = _currentScore.ToString();
         }
 
