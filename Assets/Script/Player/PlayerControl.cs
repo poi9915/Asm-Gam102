@@ -1,4 +1,5 @@
 using System;
+using Script.Enemy;
 using Script.Manager;
 using Script.Object;
 using UnityEngine;
@@ -26,6 +27,8 @@ namespace Script.Player
         [SerializeField] private int maxHp = 10;
         [SerializeField] private float groundDetectionRadius;
         [SerializeField] private HpBarControl playerHp;
+
+        [SerializeField] private float playerFlySpeed;
 
         //[SerializeField] private bool isShoot = false;
         private Animator _animator;
@@ -57,6 +60,11 @@ namespace Script.Player
                 if (Input.GetKeyDown("space") && jumpCount < 2)
                 {
                     Jump();
+                }
+
+                if (Input.GetKey(KeyCode.F))
+                {
+                    Fly();
                 }
 
                 if (Input.GetKeyDown(KeyCode.J))
@@ -131,18 +139,28 @@ namespace Script.Player
 
         public void EnemyDetect()
         {
-            RaycastHit2D ray = Physics2D.Raycast(transform.position, Vector2.right, 5f,
-                LayerMask.GetMask("Enemy"));
-            Debug.DrawRay(transform.position, Vector2.right * 5, Color.red);
-            if (ray.collider is not null)
-            {
-                Debug.Log("Detected : " + ray.collider.gameObject.name);
-            }
+            // float DoDai = 10f;
+            // Color xanh = Color.green;
+            // RaycastHit2D ray = Physics2D.Raycast(transform.position, Vector2.right, DoDai,
+            //     LayerMask.GetMask("Enemy"));
+            // Debug.DrawRay(transform.position, Vector2.right * DoDai, xanh);
+            // if (ray.collider is not null)
+            // {
+            //     Destroy(ray.collider.gameObject);
+            // }
+            // LayerMask layerMask = LayerMask.GetMask("Enemy");
+            // LayerMask layerMask2 = LayerMask.GetMask("Ground");
+            //
         }
 
         public float GetMoveSpeed()
         {
             return moveSpeed;
+        }
+
+        private void Fly()
+        {
+            _rb2d.velocity = new Vector2(_rb2d.velocity.x, jumpForce);
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -155,12 +173,22 @@ namespace Script.Player
 
             if (other.CompareTag("Enemy"))
             {
-                Dead();
+                GetHit();
             }
 
             if (other.CompareTag("Diamond"))
             {
                 GameManager.Instance.AddScore();
+            }
+
+            if (other.CompareTag("HpRec"))
+            {
+                if (hp < 10)
+                {
+                    hp = hp + 2;
+                    playerHp.UpdateHp(hp, maxHp);
+                    Destroy(other.gameObject);
+                }
             }
         }
 
